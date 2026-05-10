@@ -97,7 +97,7 @@ export default function CustomerForm({ customer, onClose, onSave }: Props) {
     const res = await fetch(`/api/customers/${customer._id}/documents`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ publicId: doc.publicId, documentId: doc._id }),
+      body: JSON.stringify({ publicId: doc.publicId, documentId: doc._id, resourceType: doc.resourceType || "raw" }),
     });
     if (res.ok) {
       const updated = await res.json();

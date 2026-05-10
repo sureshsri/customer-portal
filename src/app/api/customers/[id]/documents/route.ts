@@ -21,15 +21,17 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
   if (!file) return NextResponse.json({ error: "No file provided" }, { status: 400 });
 
+  const isPdf = file.type === "application/pdf";
+
   // Convert file to base64
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
   const base64 = `data:${file.type};base64,${buffer.toString("base64")}`;
 
-  // Upload to Cloudinary
+  // Upload to Cloudinary - use "raw" for PDFs so they are served correctly
   const result = await cloudinary.uploader.upload(base64, {
     folder: `customer-portal/${params.id}`,
-    resource_type: "auto",
+    resource_type: isPdf ? "raw" : "image",
     allowed_formats: ["pdf", "jpg", "jpeg", "png"],
   });
 
@@ -42,6 +44,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
           name: file.name,
           url: result.secure_url,
           publicId: result.public_id,
+          resourceType: isPdf ? "raw" : "image",
           uploadedAt: new Date(),
         },
       },
@@ -57,10 +60,12 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { publicId, documentId } = await req.json();
+  const { publicId, documentId, resourceType } = await req.json();
 
-  // Delete from Cloudinary
-  await cloudinary.uploader.destroy(publicId, { resource_type: "image" });
+  // Delete from Cloudinary using correct resource type
+  await cloudinary.uploader.destroy(publicId, {
+    resource_type: resourceType || "raw",
+  });
 
   await connectDB();
   const customer = await Customer.findByIdAndUpdate(

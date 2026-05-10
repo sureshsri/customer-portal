@@ -14,7 +14,7 @@ export interface ICustomer extends Document {
   finishingDate?: Date;
   date: Date;
   acceptedBy: string;
-  documents: { name: string; url: string; publicId: string; uploadedAt: Date }[];
+  documents: { name: string; url: string; publicId: string; resourceType: string; uploadedAt: Date }[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -39,6 +39,7 @@ const CustomerSchema = new Schema<ICustomer>(
         name: { type: String },
         url: { type: String },
         publicId: { type: String },
+        resourceType: { type: String, default: "raw" },
         uploadedAt: { type: Date, default: Date.now },
       },
     ],

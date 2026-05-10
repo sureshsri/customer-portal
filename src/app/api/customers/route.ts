@@ -28,11 +28,11 @@ export async function GET(req: NextRequest) {
   if (search && searchType === "id") {
     query.idNo = { $regex: search, $options: "i" };
   } else if (search && searchType === "ite") {
-    query.ite = { $regex: search, $options: "i" };
+    query.telephone = { $regex: search, $options: "i" };
   } else if (search) {
     query.$or = [
       { idNo: { $regex: search, $options: "i" } },
-      { ite: { $regex: search, $options: "i" } },
+      { telephone: { $regex: search, $options: "i" } },
       { name: { $regex: search, $options: "i" } },
       { surname: { $regex: search, $options: "i" } },
     ];
@@ -51,10 +51,12 @@ export async function POST(req: NextRequest) {
   await connectDB();
 
   const idNo = await getNextIdNo();
+  const acceptedBy = (session as any).user?.username || (session as any).user?.name || "";
 
   const customer = await Customer.create({
     ...body,
     idNo,
+    acceptedBy,
     balancePayment: (body.totalAmount || 0) - (body.advancePayment || 0),
   });
 

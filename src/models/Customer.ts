@@ -2,7 +2,7 @@ import mongoose, { Schema, Document } from "mongoose";
 
 export interface ICustomer extends Document {
   idNo: string;
-  ite: string;
+  telephone: string;
   name: string;
   surname: string;
   dateOfBirth?: Date;
@@ -13,6 +13,7 @@ export interface ICustomer extends Document {
   balancePayment: number;
   finishingDate?: Date;
   date: Date;
+  acceptedBy: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -20,7 +21,7 @@ export interface ICustomer extends Document {
 const CustomerSchema = new Schema<ICustomer>(
   {
     idNo: { type: String, required: true, unique: true },
-    ite: { type: String, required: true, trim: true },
+    telephone: { type: String, required: true, trim: true },
     name: { type: String, required: true, trim: true },
     surname: { type: String, required: true, trim: true },
     dateOfBirth: { type: Date },
@@ -31,6 +32,7 @@ const CustomerSchema = new Schema<ICustomer>(
     balancePayment: { type: Number, default: 0 },
     finishingDate: { type: Date },
     date: { type: Date, default: Date.now },
+    acceptedBy: { type: String, default: "" },
   },
   { timestamps: true }
 );

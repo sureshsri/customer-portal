@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 interface Props {
   customer: any;
@@ -9,9 +10,11 @@ interface Props {
 }
 
 export default function CustomerForm({ customer, onClose, onSave }: Props) {
+  const { data: session } = useSession();
+  const currentUser = (session?.user as any)?.username || session?.user?.name || "";
   const [categories, setCategories] = useState<any[]>([]);
   const [form, setForm] = useState({
-    ite: "", name: "", surname: "", dateOfBirth: "", country: "",
+    telephone: "", name: "", surname: "", dateOfBirth: "", country: "",
     description: "", totalAmount: 0, advancePayment: 0, finishingDate: "", date: "",
   });
   const [loading, setLoading] = useState(false);
@@ -21,7 +24,7 @@ export default function CustomerForm({ customer, onClose, onSave }: Props) {
     fetch("/api/categories").then(r => r.json()).then(setCategories);
     if (customer) {
       setForm({
-        ite: customer.ite || "",
+        telephone: customer.telephone || "",
         name: customer.name || "",
         surname: customer.surname || "",
         dateOfBirth: customer.dateOfBirth ? customer.dateOfBirth.split("T")[0] : "",
@@ -91,7 +94,7 @@ export default function CustomerForm({ customer, onClose, onSave }: Props) {
           <div className="grid grid-cols-2 gap-4">
             {field("First Name", "name", "text", true)}
             {field("Surname", "surname", "text", true)}
-            {field("ITE (Tax Code)", "ite", "text", true)}
+            {field("Telephone No.", "telephone", "tel", true)}
             {field("Country", "country", "text", true)}
             {field("Date of Birth", "dateOfBirth", "date")}
             {field("Entry Date", "date", "date", true)}
@@ -140,6 +143,16 @@ export default function CustomerForm({ customer, onClose, onSave }: Props) {
           </div>
 
           {field("Finishing Date", "finishingDate", "date")}
+
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-1">Accepted By</label>
+            <input
+              type="text"
+              value={customer ? (customer.acceptedBy || "") : currentUser}
+              readOnly
+              className="w-full border border-gray-200 bg-gray-50 rounded-lg px-3 py-2 text-sm text-gray-500 cursor-not-allowed"
+            />
+          </div>
 
           {error && <div className="bg-red-50 text-red-600 text-sm rounded-lg px-4 py-3">{error}</div>}
 

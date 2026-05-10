@@ -6,7 +6,7 @@ import CustomerForm from "./CustomerForm";
 interface Customer {
   _id: string;
   idNo: string;
-  ite: string;
+  telephone: string;
   name: string;
   surname: string;
   country: string;
@@ -17,6 +17,7 @@ interface Customer {
   date: string;
   finishingDate?: string;
   dateOfBirth?: string;
+  acceptedBy: string;
 }
 
 export default function CustomersPage() {
@@ -69,7 +70,7 @@ export default function CustomersPage() {
         >
           <option value="all">All Fields</option>
           <option value="id">By ID</option>
-          <option value="ite">By ITE Code</option>
+          <option value="ite">By Telephone</option>
         </select>
         <div className="relative flex-1">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -94,7 +95,7 @@ export default function CustomersPage() {
           <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b border-gray-100">
               <tr>
-                {["ID", "Name", "ITE Code", "Country", "Service", "Total", "Balance", "Date", "Actions"].map((h) => (
+                {["ID", "Name", "Telephone", "Country", "Service", "Total", "Balance", "Accepted By", "Date", "Actions"].map((h) => (
                   <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">{h}</th>
                 ))}
               </tr>
@@ -108,7 +109,7 @@ export default function CustomersPage() {
                 <tr key={c._id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-4 py-3 font-mono text-xs text-blue-600 font-medium">{c.idNo}</td>
                   <td className="px-4 py-3 font-medium text-gray-900">{c.name} {c.surname}</td>
-                  <td className="px-4 py-3 font-mono text-xs text-gray-600">{c.ite}</td>
+                  <td className="px-4 py-3 text-gray-600">{c.telephone}</td>
                   <td className="px-4 py-3 text-gray-600">{c.country}</td>
                   <td className="px-4 py-3 text-gray-600 max-w-32 truncate">{c.description}</td>
                   <td className="px-4 py-3 text-gray-900 font-medium">€{c.totalAmount?.toLocaleString()}</td>
@@ -117,6 +118,7 @@ export default function CustomersPage() {
                       €{c.balancePayment?.toLocaleString()}
                     </span>
                   </td>
+                  <td className="px-4 py-3 text-gray-600 text-xs">{c.acceptedBy || "—"}</td>
                   <td className="px-4 py-3 text-gray-500 text-xs">{new Date(c.date).toLocaleDateString()}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-1">

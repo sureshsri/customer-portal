@@ -123,7 +123,7 @@ export default function CustomerForm({ customer, onClose, onSave }: Props) {
       <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
           <h2 className="text-lg font-semibold text-gray-900">
-            {customer ? "Edit Customer" : "Add Customer"}
+            {customer ? "Modifica Cliente / Edit Customer" : "Nuovo Cliente / Add Customer"}
           </h2>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 p-1 rounded-md">
             <X size={20} />
@@ -132,22 +132,22 @@ export default function CustomerForm({ customer, onClose, onSave }: Props) {
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div className="grid grid-cols-2 gap-4">
-            {field("First Name", "name", "text", true)}
-            {field("Surname", "surname", "text", true)}
-            {field("Telephone No.", "telephone", "tel", true)}
-            {field("Country", "country", "text", true)}
-            {field("Date of Birth", "dateOfBirth", "date")}
-            {field("Entry Date", "date", "date", true)}
+            {field("Nome", "name", "text", true)}
+            {field("Cognome", "surname", "text", true)}
+            {field("Numero di telefono", "telephone", "tel", true)}
+            {field("Paese", "country", "text", true)}
+            {field("Data di nascita", "dateOfBirth", "date")}
+            {field("Data", "date", "date", true)}
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Job Category / Service</label>
+            <label className="block text-xs font-medium text-gray-600 mb-1">Descrizione / Description</label>
             <select
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="">Select category...</option>
+              <option value="">Seleziona categoria / Select category...</option>
               {categories.map((c) => (
                 <option key={c._id} value={c.name}>{c.name}</option>
               ))}
@@ -156,31 +156,33 @@ export default function CustomerForm({ customer, onClose, onSave }: Props) {
 
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Total Amount (€)</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Importo totale / Total Amount (€)</label>
               <input type="number" min="0" step="0.01" value={form.totalAmount}
                 onChange={(e) => setForm({ ...form, totalAmount: Number(e.target.value) })}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Advance Payment (€)</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Pagamento anticipato / Advance Payment (€)</label>
               <input type="number" min="0" step="0.01" value={form.advancePayment}
                 onChange={(e) => setForm({ ...form, advancePayment: Number(e.target.value) })}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Balance (€)</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Pagamento del saldo / Balance Payment (€)</label>
               <input type="number" value={balance} readOnly
                 className="w-full border border-gray-200 bg-gray-50 rounded-lg px-3 py-2 text-sm text-gray-500"
               />
             </div>
           </div>
 
-          {field("Finishing Date", "finishingDate", "date")}
+          {field("Data completa", "finishingDate", "date")}
 
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Accepted By</label>
+            <label className="block text-xs font-medium text-gray-600 mb-1">
+              Nomi di coloro che hanno accettato / Names of those who accepted
+            </label>
             <input type="text" value={customer ? (customer.acceptedBy || "") : currentUser} readOnly
               className="w-full border border-gray-200 bg-gray-50 rounded-lg px-3 py-2 text-sm text-gray-500 cursor-not-allowed"
             />
@@ -190,16 +192,20 @@ export default function CustomerForm({ customer, onClose, onSave }: Props) {
           {customer && (
             <div className="border border-gray-200 rounded-xl p-4">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-semibold text-gray-900">Documents</h3>
+                <h3 className="text-sm font-semibold text-gray-900">
+                  Allegato del documento / Document Attachment
+                </h3>
                 <label className={`flex items-center gap-2 bg-blue-50 hover:bg-blue-100 text-blue-700 px-3 py-1.5 rounded-lg text-xs font-medium cursor-pointer transition-colors ${uploading ? "opacity-50 pointer-events-none" : ""}`}>
                   {uploading ? <Loader2 size={13} className="animate-spin" /> : <Upload size={13} />}
-                  {uploading ? "Uploading..." : "Upload PDF"}
+                  {uploading ? "Caricamento... / Uploading..." : "Carica PDF / Upload PDF"}
                   <input ref={fileRef} type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={handleFileUpload} />
                 </label>
               </div>
 
               {documents.length === 0 ? (
-                <p className="text-xs text-gray-400 text-center py-3">No documents uploaded yet</p>
+                <p className="text-xs text-gray-400 text-center py-3">
+                  Nessun documento caricato / No documents uploaded yet
+                </p>
               ) : (
                 <div className="space-y-2">
                   {documents.map((doc: any) => (
@@ -213,8 +219,9 @@ export default function CustomerForm({ customer, onClose, onSave }: Props) {
                       </div>
                       <div className="flex items-center gap-2 shrink-0 ml-2">
                         <a href={`https://docs.google.com/viewer?url=${encodeURIComponent(doc.url)}&embedded=true`} target="_blank" rel="noopener noreferrer"
-                          className="text-xs text-blue-600 hover:underline">View</a>
-                        <a href={doc.url} download={doc.name} className="text-xs text-gray-500 hover:underline">Download</a>
+                          className="text-xs text-blue-600 hover:underline">Visualizza / View</a>
+                        <a href={doc.url} download={doc.name}
+                          className="text-xs text-gray-500 hover:underline">Scarica / Download</a>
                         <button type="button" onClick={() => handleDeleteDoc(doc)}
                           className="p-1 text-gray-400 hover:text-red-600 transition-colors">
                           <Trash2 size={13} />
@@ -224,13 +231,13 @@ export default function CustomerForm({ customer, onClose, onSave }: Props) {
                   ))}
                 </div>
               )}
-              <p className="text-xs text-gray-400 mt-2">Accepted: PDF, JPG, PNG</p>
+              <p className="text-xs text-gray-400 mt-2">Formati accettati / Accepted: PDF, JPG, PNG</p>
             </div>
           )}
 
           {!customer && (
             <p className="text-xs text-gray-400 bg-blue-50 rounded-lg px-3 py-2">
-              💡 Save the customer first, then open Edit to upload documents.
+              💡 Salva prima il cliente, poi apri Modifica per caricare documenti. / Save the customer first, then open Edit to upload documents.
             </p>
           )}
 
@@ -239,11 +246,11 @@ export default function CustomerForm({ customer, onClose, onSave }: Props) {
           <div className="flex gap-3 pt-2">
             <button type="button" onClick={onClose}
               className="flex-1 border border-gray-300 text-gray-700 rounded-lg py-2 text-sm font-medium hover:bg-gray-50 transition-colors">
-              Cancel
+              Annulla / Cancel
             </button>
             <button type="submit" disabled={loading}
               className="flex-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-2 text-sm font-medium transition-colors disabled:opacity-50">
-              {loading ? "Saving..." : customer ? "Update" : "Create"}
+              {loading ? "Salvataggio... / Saving..." : customer ? "Aggiorna / Update" : "Crea / Create"}
             </button>
           </div>
         </form>

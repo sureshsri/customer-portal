@@ -4,9 +4,8 @@ import bcrypt from "bcryptjs";
 import { connectDB } from "./mongodb";
 import User from "@/models/User";
 
-// Hardcoded admin credentials
-const ADMIN_USERNAME = "admin";
-const ADMIN_PASSWORD = "admin123";
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME!;
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD!;
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -19,14 +18,14 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.username || !credentials?.password) return null;
 
-        // Check hardcoded admin
+        // Check admin from environment variables
         if (
           credentials.username === ADMIN_USERNAME &&
           credentials.password === ADMIN_PASSWORD
         ) {
           return {
             id: "admin",
-            username: "admin",
+            username: ADMIN_USERNAME,
             email: "admin@portal.com",
             role: "admin",
             name: "Administrator",

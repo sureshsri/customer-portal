@@ -28,29 +28,45 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   const buffer = Buffer.from(bytes);
   const base64 = `data:${file.type};base64,${buffer.toString("base64")}`;
 
-  // Upload to Cloudinary - use "raw" for PDFs so they are served correctly
-  const result = await cloudinary.uploader.upload(base64, {
-    folder: `customer-portal/${params.id}`,
-    resource_type: isPdf ? "raw" : "image",
-    allowed_formats: ["pdf", "jpg", "jpeg", "png"],
-  });
 
-  await connectDB();
-  const customer = await Customer.findByIdAndUpdate(
-    params.id,
-    {
-      $push: {
-        documents: {
-          name: file.name,
-          url: result.secure_url,
-          publicId: result.public_id,
-          resourceType: isPdf ? "raw" : "image",
-          uploadedAt: new Date(),
+  // Clean filename for use as public_id
+    const originalName = file.name.replace(/\.[^/.]+$/, "").replace(/[^a-zA-Z0-9_-]/g, "_");
+
+    // Upload to Cloudinary - use "raw" for PDFs so they are served correctly
+    const result = await cloudinary.uploader.upload(base64, {
+      folder: `customer-portal/${params.id}`,
+      resource_type: isPdf ? "raw" : "image",
+      public_id: originalName,
+      use_filename: true,
+      unique_filename: true,
+      allowed_formats: ["pdf", "jpg", "jpeg", "png"],
+    });
+
+    // Build viewable URL for PDFs using Cloudinary's f_pdf transformation
+    let viewUrl = result.secure_url;
+    if (isPdf) {
+      viewUrl = result.secure_url
+        .replace("/raw/upload/", "/image/upload/f_pdf/")
+        .replace(/(\.[^.]+)?$/, ".pdf");
+    }
+
+    await connectDB();
+    const customer = await Customer.findByIdAndUpdate(
+      params.id,
+      {
+        $push: {
+          documents: {
+            name: file.name,
+            url: viewUrl,
+            downloadUrl: result.secure_url,
+            publicId: result.public_id,
+            resourceType: isPdf ? "raw" : "image",
+            uploadedAt: new Date(),
+          },
         },
       },
-    },
-    { new: true }
-  );
+      { new: true }
+    );
 
   return NextResponse.json(customer);
 }

@@ -21,52 +21,41 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
   if (!file) return NextResponse.json({ error: "No file provided" }, { status: 400 });
 
-  const isPdf = file.type === "application/pdf";
+  // Clean filename for use as public_id
+  const originalName = file.name.replace(/\.[^/.]+$/, "").replace(/[^a-zA-Z0-9_-]/g, "_");
 
   // Convert file to base64
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
   const base64 = `data:${file.type};base64,${buffer.toString("base64")}`;
 
+  // Upload everything as image type - Cloudinary handles PDFs as images too
+  const result = await cloudinary.uploader.upload(base64, {
+    folder: `customer-portal/${params.id}`,
+    resource_type: "image",
+    public_id: originalName,
+    use_filename: true,
+    unique_filename: true,
+    allowed_formats: ["pdf", "jpg", "jpeg", "png"],
+  });
 
-  // Clean filename for use as public_id
-    const originalName = file.name.replace(/\.[^/.]+$/, "").replace(/[^a-zA-Z0-9_-]/g, "_");
-
-    // Upload to Cloudinary - use "raw" for PDFs so they are served correctly
-    const result = await cloudinary.uploader.upload(base64, {
-      folder: `customer-portal/${params.id}`,
-      resource_type: isPdf ? "raw" : "image",
-      public_id: originalName,
-      use_filename: true,
-      unique_filename: true,
-      allowed_formats: ["pdf", "jpg", "jpeg", "png"],
-    });
-
-    // Build viewable URL for PDFs using Cloudinary's f_pdf transformation
-    let viewUrl = result.secure_url;
-    if (isPdf) {
-      viewUrl = result.secure_url
-        .replace("/raw/upload/", "/image/upload/f_pdf/")
-        .replace(/(\.[^.]+)?$/, ".pdf");
-    }
-
-    await connectDB();
-    const customer = await Customer.findByIdAndUpdate(
-      params.id,
-      {
-        $push: {
-          documents: {
-            name: file.name,
-            url: viewUrl,
-            downloadUrl: result.secure_url,
-            publicId: result.public_id,
-            resourceType: isPdf ? "raw" : "image",
-            uploadedAt: new Date(),
-          },
+  await connectDB();
+  const customer = await Customer.findByIdAndUpdate(
+    params.id,
+    {
+      $push: {
+        documents: {
+          name: file.name,
+          url: result.secure_url,
+          downloadUrl: result.secure_url,
+          publicId: result.public_id,
+          resourceType: "image",
+          uploadedAt: new Date(),
         },
       },
-      { new: true }
-    );
+    },
+    { new: true }
+  );
 
   return NextResponse.json(customer);
 }
@@ -76,11 +65,11 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { publicId, documentId, resourceType } = await req.json();
+  const { publicId, documentId } = await req.json();
 
-  // Delete from Cloudinary using correct resource type
+  // Delete from Cloudinary
   await cloudinary.uploader.destroy(publicId, {
-    resource_type: resourceType || "raw",
+    resource_type: "image",
   });
 
   await connectDB();

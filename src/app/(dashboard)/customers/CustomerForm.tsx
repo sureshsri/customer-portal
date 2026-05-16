@@ -218,10 +218,10 @@ export default function CustomerForm({ customer, onClose, onSave }: Props) {
                         </div>
                       </div>
                       <div className="flex items-center gap-2 shrink-0 ml-2">
-                        <a href={`https://docs.google.com/viewer?url=${encodeURIComponent(doc.url)}&embedded=true`} target="_blank" rel="noopener noreferrer"
-                          className="text-xs text-blue-600 hover:underline">Visualizza / View</a>
-                        <a href={doc.url} download={doc.name}
-                          className="text-xs text-gray-500 hover:underline">Scarica / Download</a>
+                      <a href={doc.url.replace("/upload/", "/upload/fl_inline/")} target="_blank" rel="noopener noreferrer"
+                        className="text-xs text-blue-600 hover:underline">Visualizza / View</a>
+                       <a href={doc.url.replace("/upload/", "/upload/fl_attachment/")} target="_blank" rel="noopener noreferrer"
+                         className="text-xs text-gray-500 hover:underline">Scarica / Download</a>
                         <button type="button" onClick={() => handleDeleteDoc(doc)}
                           className="p-1 text-gray-400 hover:text-red-600 transition-colors">
                           <Trash2 size={13} />

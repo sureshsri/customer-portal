@@ -141,13 +141,13 @@ export default function CustomerForm({ customer, onClose, onSave }: Props) {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Descrizione / Description</label>
+            <label className="block text-xs font-medium text-gray-600 mb-1">Descrizione</label>
             <select
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="">Seleziona categoria / Select category...</option>
+              <option value="">Seleziona categoria</option>
               {categories.map((c) => (
                 <option key={c._id} value={c.name}>{c.name}</option>
               ))}
@@ -156,21 +156,21 @@ export default function CustomerForm({ customer, onClose, onSave }: Props) {
 
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Importo totale / Total Amount (€)</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Importo totale (€)</label>
               <input type="number" min="0" step="0.01" value={form.totalAmount}
                 onChange={(e) => setForm({ ...form, totalAmount: Number(e.target.value) })}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Pagamento anticipato / Advance Payment (€)</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Pagamento anticipato (€)</label>
               <input type="number" min="0" step="0.01" value={form.advancePayment}
                 onChange={(e) => setForm({ ...form, advancePayment: Number(e.target.value) })}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Pagamento del saldo / Balance Payment (€)</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Pagamento del saldo (€)</label>
               <input type="number" value={balance} readOnly
                 className="w-full border border-gray-200 bg-gray-50 rounded-lg px-3 py-2 text-sm text-gray-500"
               />
@@ -181,7 +181,7 @@ export default function CustomerForm({ customer, onClose, onSave }: Props) {
 
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">
-              Nomi di coloro che hanno accettato / Names of those who accepted
+              Nomi di coloro che hanno accettato
             </label>
             <input type="text" value={customer ? (customer.acceptedBy || "") : currentUser} readOnly
               className="w-full border border-gray-200 bg-gray-50 rounded-lg px-3 py-2 text-sm text-gray-500 cursor-not-allowed"
@@ -193,7 +193,7 @@ export default function CustomerForm({ customer, onClose, onSave }: Props) {
             <div className="border border-gray-200 rounded-xl p-4">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-sm font-semibold text-gray-900">
-                  Allegato del documento / Document Attachment
+                  Allegato del documento
                 </h3>
                 <label className={`flex items-center gap-2 bg-blue-50 hover:bg-blue-100 text-blue-700 px-3 py-1.5 rounded-lg text-xs font-medium cursor-pointer transition-colors ${uploading ? "opacity-50 pointer-events-none" : ""}`}>
                   {uploading ? <Loader2 size={13} className="animate-spin" /> : <Upload size={13} />}
@@ -204,7 +204,7 @@ export default function CustomerForm({ customer, onClose, onSave }: Props) {
 
               {documents.length === 0 ? (
                 <p className="text-xs text-gray-400 text-center py-3">
-                  Nessun documento caricato / No documents uploaded yet
+                  Nessun documento caricato
                 </p>
               ) : (
                 <div className="space-y-2">

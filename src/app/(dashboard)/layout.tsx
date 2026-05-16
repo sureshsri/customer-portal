@@ -2,6 +2,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Sidebar from "@/components/layout/Sidebar";
+import InactivityHandler from "@/components/layout/InactivityHandler";
+import { INACTIVITY_TIMEOUT_MS } from "@/lib/auth";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const session = await getServerSession(authOptions);
@@ -9,6 +11,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <InactivityHandler timeoutMs={INACTIVITY_TIMEOUT_MS} />
       <Sidebar />
       <main className="lg:pl-64 min-h-screen">
         <div className="p-6 pt-16 lg:pt-6">{children}</div>
